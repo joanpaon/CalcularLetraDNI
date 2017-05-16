@@ -1,5 +1,35 @@
 <pre>
 
+Version 0.1.1
+=============
+
+Info
+----
+Date ....: 16/05/2017
+Purpose .: Java 8 | Netbeans 8.2 | Swing [ Manual ] #06
+---
+
+Additions
+---------
+> None
+---
+
+Updates
+-------
+> README.md
+> CHANGELOG.md
+---
+
+Changes
+-------
+> org.japo.java.forms.GUI.java
+---
+
+Deleted
+-------
+> None
+---
+
 Version 0.1.0
 =============
 
