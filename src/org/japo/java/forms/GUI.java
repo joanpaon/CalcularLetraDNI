@@ -15,7 +15,6 @@
  */
 package org.japo.java.forms;
 
-import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
@@ -82,7 +81,6 @@ public class GUI extends JFrame {
         setTitle("Cálculo NIF");
         setContentPane(pnlPpal);
         setResizable(false);
-//        setSize(VENTANA_ANC, VENTANA_ALT);
         pack();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
