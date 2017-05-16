@@ -34,8 +34,8 @@ public class GUI extends JFrame {
     public static final int VENTANA_ALT = 300;
     
     // Referncias a elementos
-    JTextField txfDNI;
-    JLabel lblDNI;
+    private JTextField txfDNI;
+    private JLabel lblDNI;
 
     public GUI() {
         // Inicialización PREVIA
