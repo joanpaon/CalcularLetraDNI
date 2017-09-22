@@ -15,105 +15,128 @@
  */
 package org.japo.java.forms;
 
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.net.URL;
+import java.util.Properties;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import org.japo.java.components.BackgroundPanel;
 import org.japo.java.events.AEM;
-import org.japo.java.lib.UtilesDNI;
+import org.japo.java.libraries.UtilesDNI;
+import org.japo.java.libraries.UtilesSwing;
+import org.japo.java.libraries.UtilesValidacion;
 
 /**
  *
  * @author José A. Pacheco Ondoño - joanpaon@gmail.com
  */
 public class GUI extends JFrame {
-    // Tamaño de la ventana
-    public static final int VENTANA_ANC = 400;
-    public static final int VENTANA_ALT = 300;
-    
-    // Referncias a elementos
+
+    // Propiedades App
+    public static final String PRP_LOOK_AND_FEEL = "look_and_feel";
+    public static final String PRP_FAVICON = "favicon";
+    public static final String PRP_BACKGROUND = "background";
+
+    // Valores por Defecto
+    public static final String DEF_LOOK_AND_FEEL = UtilesSwing.LNF_NIMBUS;
+    public static final String DEF_FAVICON = "img/favicon.png";
+    public static final String DEF_BACKGROUND = "img/dni.png";
+
+    // Referencias
+    private Properties prp;
     private JTextField txfDNI;
     private JLabel lblDNI;
 
-    public GUI() {
-        // Inicialización PREVIA
-        beforeInit();
+    // Constructor
+    public GUI(Properties prp) {
+        // Inicialización Anterior
+        initBefore(prp);
 
-        // Creación del interfaz
+        // Creación Interfaz
         initComponents();
 
-        // Inicialización POSTERIOR
-        afterInit();
+        // Inicializacion Posterior
+        initAfter();
     }
 
     // Construcción del IGU
     private void initComponents() {
-        // Fuente personalizada
-        Font f = new Font("Consolas", Font.BOLD, 30);
-        
-        // Gestor de Eventos de Acción
-        AEM aem = new AEM(this);
-        
         // Número de NIF
         txfDNI = new JTextField("");
-        txfDNI.setFont(f);
+        txfDNI.setFont(new Font("Consolas", Font.BOLD, 80));
         txfDNI.setColumns(8);
         txfDNI.setHorizontalAlignment(JTextField.RIGHT);
-        txfDNI.addActionListener(aem);
-        
-        // Guión separador
-        JLabel lblGuion = new JLabel("-");
-        lblGuion.setFont(f);
+        txfDNI.addActionListener(new AEM(this));
         
         // Letra del NIF
-        lblDNI = new JLabel("*");
-        lblDNI.setFont(f);
+        lblDNI = new JLabel("•");
+        lblDNI.setFont(new Font("Consolas", Font.BOLD, 80));
+        lblDNI.setOpaque(true);
+        lblDNI.setBackground(Color.WHITE);
+        lblDNI.setBorder(txfDNI.getBorder());
+
+        // Panel DNI
+        JPanel pnlDNI = new JPanel();
+        pnlDNI.add(txfDNI);
+        pnlDNI.add(lblDNI);
         
         // Panel Principal
-        JPanel pnlPpal = new JPanel();
-        pnlPpal.add(txfDNI);
-        pnlPpal.add(lblGuion);
-        pnlPpal.add(lblDNI);
-        
+        String fondoPpal = prp.getProperty(PRP_BACKGROUND, DEF_BACKGROUND);
+        URL urlPpal = ClassLoader.getSystemResource(fondoPpal);
+        Image imgPpal = new ImageIcon(urlPpal).getImage();
+        JPanel pnlPpal = new BackgroundPanel(imgPpal);
+        pnlPpal.setLayout(new GridBagLayout());
+        pnlPpal.add(pnlDNI);
+
         // Ventana principal
-        setTitle("Cálculo NIF");
         setContentPane(pnlPpal);
+        setTitle("Swing Manual #06");
         setResizable(false);
-        pack();
+        setSize(500, 300);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    // Inicialización antes del IGU
-    private void beforeInit() {
+    // Inicialización Anterior    
+    private void initBefore(Properties prp) {
+        // Memorizar Referencia
+        this.prp = prp;
 
+        // Establecer LnF
+        UtilesSwing.establecerLnF(prp.getProperty(PRP_LOOK_AND_FEEL, DEF_LOOK_AND_FEEL));
     }
 
-    // Inicialización después del IGU
-    private void afterInit() {
-
+    // Inicialización Anterior
+    private void initAfter() {
+        // Establecer Favicon
+        UtilesSwing.establecerFavicon(this, prp.getProperty(PRP_FAVICON, DEF_FAVICON));
     }
 
-    public void gestionarNIF(ActionEvent e) {
-        // Texto introducido por el usuario
-        String texto = txfDNI.getText();
-        
-        // Número de DNI
-        int numero = UtilesDNI.extraerNumeroDNI(texto);
-        
-        // Procesa el numero
-        if (UtilesDNI.validarNumeroDNI(numero)) {
-            // Calcular letra
-            char letra = UtilesDNI.calcularLetraDNI(numero);
-            
+    public void procesarDNI(ActionEvent ae) {
+        try {
+            if (UtilesValidacion.validarDato(txfDNI.getText(), "\\d{8}")) {
+                // Número de DNI
+                int numero = Integer.parseInt(txfDNI.getText());
+
+                // Calcular letra
+                char letra = UtilesDNI.calcularLetraDNI(numero);
+
+                // Publicar la letra
+                lblDNI.setText(letra + "");
+            } else {
+                throw new Exception();
+            }
+        } catch (Exception e) {
             // Publicar la letra
-            lblDNI.setText(letra + "");
-        } else {
-            // Publicar la letra
-            lblDNI.setText("*");
+            txfDNI.setText("");
+            lblDNI.setText("•");
         }
     }
-
 }

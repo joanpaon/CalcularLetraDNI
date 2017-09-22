@@ -28,13 +28,13 @@ public class AEM implements ActionListener {
     // Referencia al igu
     private final GUI gui;
 
+    // Constructor
     public AEM(GUI gui) {
         this.gui = gui;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        gui.gestionarNIF(e);
+        gui.procesarDNI(e);
     }
-
 }

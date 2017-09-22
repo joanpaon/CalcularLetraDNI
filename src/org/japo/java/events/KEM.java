@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2017 José A. Pacheco Ondoño - joanpaon@gmail.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 package org.japo.java.events;
 
 import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import org.japo.java.forms.GUI;
 
 /**
@@ -24,11 +25,16 @@ import org.japo.java.forms.GUI;
  */
 public class KEM extends KeyAdapter {
 
-    // Referencia al igu
+    // Referencia al GUI
     private final GUI gui;
 
+    // Constructor
     public KEM(GUI gui) {
         this.gui = gui;
     }
 
+    @Override
+    public void keyPressed(KeyEvent e) {
+        
+    }
 }

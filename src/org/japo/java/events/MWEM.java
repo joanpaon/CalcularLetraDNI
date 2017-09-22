@@ -1,5 +1,5 @@
-/*
- * Copyright 2016 José A. Pacheco Ondoño - joanpaon@gmail.com.
+/* 
+ * Copyright 2017 José A. Pacheco Ondoño - joanpaon@gmail.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.japo.java.app;
+package org.japo.java.events;
 
-import java.awt.EventQueue;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import org.japo.java.forms.GUI;
 
 /**
  *
  * @author José A. Pacheco Ondoño - joanpaon@gmail.com
- *
- * Funcionalidad/Objetivo de la aplicación.
  */
-public class App {
+public class MWEM implements MouseWheelListener {
 
-    // Entrada al Mecanismo Funcional
-    public void launchApp() {
-        // Lanzar GUI
-        launchGUI();
+    // Referencia al GUI
+    private final GUI gui;
+
+    // Constructor
+    public MWEM(GUI gui) {
+        this.gui = gui;
     }
 
-    // Lanzar Interfaz Grafico de Usuario
-    public void launchGUI() {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                // Instancia la ventana
-                GUI gui = new GUI();
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
 
-                // Muestra la ventana
-                gui.setVisible(true);
-            }
-        });
     }
-
 }

@@ -1,5 +1,11 @@
 <pre>
 
+Version 0.1.2
+=============
+> Changed project name
+> Simplified and improved code
+----
+
 Version 0.1.1
 =============
 

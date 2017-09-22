@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2017 José A. Pacheco Ondoño - joanpaon@gmail.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,15 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.japo.java.interfaces;
+package org.japo.java.events;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import org.japo.java.forms.GUI;
 
 /**
  *
  * @author José A. Pacheco Ondoño - joanpaon@gmail.com
- *
- * Ejemplo de interfaz
  */
-public interface ICapacity {
+public class MMEM implements MouseMotionListener {
 
-    boolean validarNumero();
+    // Referencia al GUI
+    private final GUI gui;
+
+    // Constructor
+    public MMEM(GUI gui) {
+        this.gui = gui;
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+
+    }
 }
