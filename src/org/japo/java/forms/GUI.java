@@ -27,8 +27,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
 import org.japo.java.components.BackgroundPanel;
 import org.japo.java.events.AEM;
+import org.japo.java.events.DEM;
 import org.japo.java.libraries.UtilesDNI;
 import org.japo.java.libraries.UtilesSwing;
 import org.japo.java.libraries.UtilesValidacion;
@@ -72,11 +74,12 @@ public class GUI extends JFrame {
         txfDNI = new JTextField("");
         txfDNI.setFont(new Font("Consolas", Font.BOLD, 80));
         txfDNI.setColumns(8);
-        txfDNI.setHorizontalAlignment(JTextField.RIGHT);
+        txfDNI.setHorizontalAlignment(JTextField.CENTER);
         txfDNI.addActionListener(new AEM(this));
+        txfDNI.getDocument().addDocumentListener(new DEM(this));
 
         // Letra del NIF
-        lblDNI = new JLabel("•");
+        lblDNI = new JLabel(" ");
         lblDNI.setFont(new Font("Consolas", Font.BOLD, 80));
         lblDNI.setOpaque(true);
         lblDNI.setBackground(Color.WHITE);
@@ -119,11 +122,21 @@ public class GUI extends JFrame {
         UtilesSwing.establecerFavicon(this, prp.getProperty(PRP_FAVICON, DEF_FAVICON));
     }
 
+    // Calcula la letra del DNI actual
     public void procesarDNI(ActionEvent ae) {
         try {
-            if (UtilesValidacion.validarDNI(txfDNI.getText())) {
+            // Convierte el texto a mayúsculas
+            String texto = txfDNI.getText().toUpperCase();
+
+            if (UtilesValidacion.validarNumeroDNI(texto)) {
+                // Actualiza el campo de texto
+                txfDNI.setText(texto);
+
+                // Procesa Dígito Inicial (Extranjeros)
+                texto = UtilesDNI.procesarDigitoInicial(texto);
+
                 // Número de DNI
-                int numero = Integer.parseInt(txfDNI.getText());
+                int numero = Integer.parseInt(texto);
 
                 // Calcular letra
                 char letra = UtilesDNI.calcularControl(numero);
@@ -135,8 +148,14 @@ public class GUI extends JFrame {
             }
         } catch (Exception e) {
             // Publicar la letra
-            txfDNI.setText("");
+            txfDNI.setBackground(Color.RED);
             lblDNI.setText("•");
         }
+    }
+
+    // Reinicia interfaz para nuevo DNI
+    public void reiniciarInterfaz(DocumentEvent e) {
+        txfDNI.setBackground(Color.WHITE);
+        lblDNI.setText(" ");
     }
 }

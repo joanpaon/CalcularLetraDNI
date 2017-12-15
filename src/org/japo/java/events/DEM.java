@@ -15,6 +15,7 @@
  */
 package org.japo.java.events;
 
+import java.awt.Color;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.japo.java.forms.GUI;
@@ -31,16 +32,16 @@ public class DEM implements DocumentListener {
 
     @Override
     public void insertUpdate(DocumentEvent e) {
-
+        gui.reiniciarInterfaz(e);
     }
 
     @Override
     public void removeUpdate(DocumentEvent e) {
-
+        gui.reiniciarInterfaz(e);
     }
 
     @Override
     public void changedUpdate(DocumentEvent e) {
-
+        gui.reiniciarInterfaz(e);
     }
 }
