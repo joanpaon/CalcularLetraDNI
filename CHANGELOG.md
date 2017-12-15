@@ -1,70 +1,7 @@
 <pre>
 
-Version 0.1.2
-=============
-> Changed project name
-> Simplified and improved code
-----
-
-Version 0.1.1
-=============
-
-Info
-----
-Date ....: 16/05/2017
-Purpose .: Java 8 | Netbeans 8.2 | Swing [ Manual ] #06
----
-
-Additions
----------
-> None
----
-
-Updates
--------
-> README.md
-> CHANGELOG.md
----
-
-Changes
--------
-> org.japo.java.forms.GUI.java
----
-
-Deleted
--------
-> None
----
-
-Version 0.1.0
-=============
-
-Info
-----
-Date ....: 15/05/2017
-Purpose .: Java 8 | Netbeans 8.2 | Swing [ Manual ] #06
----
-
-Additions
----------
-> None
----
-
-Updates
--------
-> README.md
-> CHANGELOG.md
----
-
-Changes
--------
-> org.japo.java.forms.GUI.java
-> org.japo.java.events.AEM.java
----
-
-Deleted
--------
-> None
----
+> Added new libraries classes
+> Updated current libraries
+> Some cleaning and small refactorizations
 
 </pre>

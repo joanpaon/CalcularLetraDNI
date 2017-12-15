@@ -74,7 +74,7 @@ public class GUI extends JFrame {
         txfDNI.setColumns(8);
         txfDNI.setHorizontalAlignment(JTextField.RIGHT);
         txfDNI.addActionListener(new AEM(this));
-        
+
         // Letra del NIF
         lblDNI = new JLabel("•");
         lblDNI.setFont(new Font("Consolas", Font.BOLD, 80));
@@ -86,7 +86,7 @@ public class GUI extends JFrame {
         JPanel pnlDNI = new JPanel();
         pnlDNI.add(txfDNI);
         pnlDNI.add(lblDNI);
-        
+
         // Panel Principal
         String fondoPpal = prp.getProperty(PRP_BACKGROUND, DEF_BACKGROUND);
         URL urlPpal = ClassLoader.getSystemResource(fondoPpal);
@@ -121,12 +121,12 @@ public class GUI extends JFrame {
 
     public void procesarDNI(ActionEvent ae) {
         try {
-            if (UtilesValidacion.validarDato(txfDNI.getText(), "\\d{8}")) {
+            if (UtilesValidacion.validarDNI(txfDNI.getText())) {
                 // Número de DNI
                 int numero = Integer.parseInt(txfDNI.getText());
 
                 // Calcular letra
-                char letra = UtilesDNI.calcularLetraDNI(numero);
+                char letra = UtilesDNI.calcularControl(numero);
 
                 // Publicar la letra
                 lblDNI.setText(letra + "");

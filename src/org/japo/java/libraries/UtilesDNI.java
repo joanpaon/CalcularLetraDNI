@@ -15,6 +15,8 @@
  */
 package org.japo.java.libraries;
 
+import java.util.Random;
+
 /**
  *
  * @author José A. Pacheco Ondoño - joanpaon@gmail.com
@@ -22,42 +24,50 @@ package org.japo.java.libraries;
 public class UtilesDNI {
 
     // Secuencia letras DNI
-    public static final String LETRAS = "TRWAGMYFPDXBNJZSQVHLCKE";
+    public static final String SECUENCIA = "TRWAGMYFPDXBNJZSQVHLCKE";
+
+    // Limites DNI
+    public static final int NUM_MIN = 10000000;
+    public static final int NUM_MAX = 99999999;
 
     // Expresión Regular FORMATO DNI ESPAÑOL SIN VALIDACION
-    public static final String ER_DNI_ESP = "[0-9]{8}[" + LETRAS + "]";
+    public static final String ER_DNI_ESP = "[0-9]{8}[" + SECUENCIA + "]";
 
     // Expresión Regular FORMATO DNI EXTRANJERO SIN VALIDACION
-    public static final String ER_DNI_EXT = "[XYZ][0-9]{7}[" + LETRAS + "]";
+    public static final String ER_DNI_EXT = "[XYZ][0-9]{7}[" + SECUENCIA + "]";
 
     // Expresión Regular FORMATO DNI (ESPAÑOL + EXTRANJERO) SIN VALIDACION
     public static final String ER_DNI = ER_DNI_ESP + "|" + ER_DNI_EXT;
 
     // Calcula letra a partir del número de DNI
-    public static char calcularLetraDNI(int dni) {
-        return LETRAS.charAt(dni % LETRAS.length());
+    public static char calcularControl(int dni) {
+        return SECUENCIA.charAt(dni % SECUENCIA.length());
     }
 
     // Extraer número del DNI
-    public static int extraerNumeroDNI(String dni) throws Exception {
+    public static int extraerNumero(String dni) throws Exception {
         // Almacen del DNI extraido
         int numero;
 
         // Validar Formato DNI
         if (!UtilesValidacion.validarDato(dni, ER_DNI)) {
-            throw new Exception("Formato erróneo de DNI");
+            throw new Exception("ERROR: Formato erróneo de DNI");
         }
 
         // Extraer Prefijo Numérico
         String prefijo = "";
-        if (dni.charAt(0) == 'X') {
-            prefijo += '0' + dni.substring(1, dni.length() - 1);
-        } else if (dni.charAt(0) == 'Y') {
-            prefijo += '1' + dni.substring(1, dni.length() - 1);
-        } else if (dni.charAt(0) == 'Z') {
-            prefijo += '2' + dni.substring(1, dni.length() - 1);
-        } else {
-            prefijo += dni.substring(0, dni.length() - 1);
+        switch (dni.charAt(0)) {
+            case 'X':
+                prefijo += '0' + dni.substring(1, dni.length() - 1);
+                break;
+            case 'Y':
+                prefijo += '1' + dni.substring(1, dni.length() - 1);
+                break;
+            case 'Z':
+                prefijo += '2' + dni.substring(1, dni.length() - 1);
+                break;
+            default:
+                prefijo += dni.substring(0, dni.length() - 1);
         }
 
         // Convierte el texto a entero
@@ -67,38 +77,26 @@ public class UtilesDNI {
         return numero;
     }
 
-// Extraer letra del DNI
-    public static char extraerLetraDNI(String dni) throws Exception {
-
+    // Extraer letra del DNI
+    public static char extraerControl(String dni) throws Exception {
         // Validar Formato DNI
         if (!UtilesValidacion.validarDato(dni, ER_DNI)) {
-            throw new Exception("Formato erróneo de DNI");
+            throw new Exception("ERROR: Formato erróneo de DNI");
         }
 
         // Devuelve Letra
         return dni.charAt(dni.length() - 1);
     }
 
-    // Valida DNI - Formato texto
-    public static boolean validarDNI(String dni) {
-        // Semáforo de validación
-        boolean dniOK = false;
+    // Genera un DNI aleatorio
+    public static final String generarDNI() {
+        // Generar Número
+        int num = new Random().nextInt(NUM_MAX - NUM_MIN + 1) + NUM_MIN;
 
-        // Validar DNI
-        try {
-            // Extraer DNI
-            int numero = extraerNumeroDNI(dni);
+        // Generar Control
+        char ctr = calcularControl(num);
 
-            // Extraer LETRA
-            char letra = extraerLetraDNI(dni);
-
-            // Análisis Concordancia
-            dniOK = calcularLetraDNI(numero) == letra;
-        } catch (Exception e) {
-            System.out.println("ERROR: Formato DNI incorrecto");
-        }
-        
-        // Resultado del análisis
-        return dniOK;
+        // Devolver DNI
+        return "" + num + ctr;
     }
 }
