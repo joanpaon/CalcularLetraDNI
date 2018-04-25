@@ -31,16 +31,16 @@ public class DEM implements DocumentListener {
 
     @Override
     public void insertUpdate(DocumentEvent e) {
-        gui.reiniciarInterfaz(e);
+
     }
 
     @Override
     public void removeUpdate(DocumentEvent e) {
-        gui.reiniciarInterfaz(e);
+
     }
 
     @Override
     public void changedUpdate(DocumentEvent e) {
-        gui.reiniciarInterfaz(e);
+
     }
 }
