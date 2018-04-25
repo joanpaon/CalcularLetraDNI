@@ -29,7 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.japo.java.components.BackgroundPanel;
 import org.japo.java.events.AEM;
-import org.japo.java.events.DEM;
 import org.japo.java.libraries.UtilesDNI;
 import org.japo.java.libraries.UtilesSwing;
 import org.japo.java.libraries.UtilesValidacion;
@@ -48,7 +47,7 @@ public class GUI extends JFrame {
     // Valores por Defecto
     public static final String DEF_LOOK_AND_FEEL = UtilesSwing.LNF_NIMBUS;
     public static final String DEF_FAVICON = "img/favicon.png";
-    public static final String DEF_BACKGROUND = "img/dni.png";
+    public static final String DEF_BACKGROUND = "img/background.png";
 
     // Referencias
     private Properties prp;
