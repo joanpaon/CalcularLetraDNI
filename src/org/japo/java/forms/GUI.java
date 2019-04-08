@@ -31,33 +31,47 @@ import org.japo.java.components.BackgroundPanel;
 import org.japo.java.events.AEM;
 import org.japo.java.libraries.UtilesDNI;
 import org.japo.java.libraries.UtilesSwing;
-import org.japo.java.libraries.UtilesValidacion;
 
 /**
  *
  * @author José A. Pacheco Ondoño - joanpaon@gmail.com
  */
-public class GUI extends JFrame {
+public final class GUI extends JFrame {
 
     // Propiedades App
-    public static final String PRP_LOOK_AND_FEEL = "look_and_feel";
-    public static final String PRP_FAVICON = "favicon";
-    public static final String PRP_BACKGROUND = "background";
+    public static final String PRP_LOOK_AND_FEEL_PROFILE = "form_look_and_feel_profile";
+    public static final String PRP_FAVICON_RESOURCE = "form_favicon_resource";
+    public static final String PRP_FORM_TITLE = "form_title";
+    public static final String PRP_FORM_HEIGHT = "form_height";
+    public static final String PRP_FORM_WIDTH = "form_width";
+    public static final String PRP_FORM_BACKGROUND_RESOURCE = "form_background_resource";
+    public static final String PRP_FORM_FONT_RESOURCE = "form_font_resource";
 
     // Valores por Defecto
-    public static final String DEF_LOOK_AND_FEEL = UtilesSwing.LNF_WINDOWS;
-    public static final String DEF_FAVICON = "img/favicon.png";
-    public static final String DEF_BACKGROUND = "img/background.png";
+    public static final String DEF_LOOK_AND_FEEL_PROFILE = UtilesSwing.LNF_WINDOWS_PROFILE;
+    public static final String DEF_FAVICON_RESOURCE = "img/favicon.png";
+    public static final String DEF_FORM_TITLE = "Swing Manual App";
+    public static final int DEF_FORM_HEIGHT = 300;
+    public static final int DEF_FORM_WIDTH = 500;
+    public static final String DEF_FORM_BACKGROUND_RESOURCE = "img/background.jpg";
+    public static final String DEF_FORM_FONT_RESOURCE = "fonts/default_font.ttf";
 
     // Referencias
     private Properties prp;
+    
+    // Componentes
     private JTextField txfDNI;
     private JLabel lblDNI;
+    private JPanel pnlDNI;
+    private JPanel pnlPpal;
 
     // Constructor
     public GUI(Properties prp) {
+        // Conectar Referencia
+        this.prp = prp;
+
         // Inicialización Anterior
-        initBefore(prp);
+        initBefore();
 
         // Creación Interfaz
         initComponents();
@@ -70,55 +84,65 @@ public class GUI extends JFrame {
     private void initComponents() {
         // Número de DNI
         txfDNI = new JTextField("");
-        txfDNI.setFont(new Font("Consolas", Font.BOLD, 80));
+        txfDNI.setFont(UtilesSwing.importarFuenteRecurso(
+                prp.getProperty(PRP_FORM_FONT_RESOURCE, DEF_FORM_FONT_RESOURCE)).
+                deriveFont(Font.PLAIN, 80f));
         txfDNI.setColumns(8);
         txfDNI.setHorizontalAlignment(JTextField.RIGHT);
         txfDNI.addActionListener(new AEM(this));
 
         // Control de DNI
         lblDNI = new JLabel("•");
-        lblDNI.setFont(new Font("Consolas", Font.BOLD, 80));
+        lblDNI.setFont(UtilesSwing.importarFuenteRecurso(
+                prp.getProperty(PRP_FORM_FONT_RESOURCE, DEF_FORM_FONT_RESOURCE)).
+                deriveFont(Font.PLAIN, 80f));
         lblDNI.setOpaque(true);
         lblDNI.setBackground(Color.WHITE);
         lblDNI.setBorder(txfDNI.getBorder());
 
         // Panel DNI
-        JPanel pnlDNI = new JPanel();
+        pnlDNI = new JPanel();
         pnlDNI.add(txfDNI);
         pnlDNI.add(lblDNI);
 
         // Imagen de Fondo
-        String pthDNI = prp.getProperty(PRP_BACKGROUND, DEF_BACKGROUND);
+        String pthDNI = prp.getProperty(
+                PRP_FORM_BACKGROUND_RESOURCE, DEF_FORM_BACKGROUND_RESOURCE);
         URL urlDNI = ClassLoader.getSystemResource(pthDNI);
         Image imgDNI = new ImageIcon(urlDNI).getImage();
 
         // Panel Principal
-        JPanel pnlPpal = new BackgroundPanel(imgDNI);
+        pnlPpal = new BackgroundPanel(imgDNI);
         pnlPpal.setLayout(new GridBagLayout());
         pnlPpal.add(pnlDNI);
 
         // Ventana Principal
         setContentPane(pnlPpal);
-        setTitle("Swing Manual #06");
+        setTitle(prp.getProperty(PRP_FORM_TITLE, DEF_FORM_TITLE));
+        try {
+            int height = Integer.parseInt(prp.getProperty(PRP_FORM_HEIGHT));
+            int width = Integer.parseInt(prp.getProperty(PRP_FORM_WIDTH));
+            setSize(width, height);
+        } catch (NumberFormatException e) {
+            setSize(DEF_FORM_WIDTH, DEF_FORM_HEIGHT);
+        }
         setResizable(false);
-        setSize(500, 300);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     // Inicialización Anterior    
-    private void initBefore(Properties prp) {
-        // Memorizar Referencia
-        this.prp = prp;
-
+    private void initBefore() {
         // Establecer LnF
-        UtilesSwing.establecerLnF(prp.getProperty(PRP_LOOK_AND_FEEL, DEF_LOOK_AND_FEEL));
+        UtilesSwing.establecerLnFProfile(prp.getProperty(
+                PRP_LOOK_AND_FEEL_PROFILE, DEF_LOOK_AND_FEEL_PROFILE));
     }
 
     // Inicialización Posterior
     private void initAfter() {
         // Establecer Favicon
-        UtilesSwing.establecerFavicon(this, prp.getProperty(PRP_FAVICON, DEF_FAVICON));
+        UtilesSwing.establecerFavicon(this, prp.getProperty(
+                PRP_FAVICON_RESOURCE, DEF_FAVICON_RESOURCE));
     }
 
     // Calcula la letra del DNI actual
@@ -128,12 +152,12 @@ public class GUI extends JFrame {
             String numDNI = txfDNI.getText().trim().toUpperCase();
             
             // Procesa el número de DNI
-            if (UtilesValidacion.validarDato(numDNI, UtilesDNI.ER_NUM_DNI)) {
+            if (UtilesDNI.validarNumero(numDNI)) {
                 // Número de DNI
-                int numero = Integer.parseInt(UtilesDNI.normalizarNumeroDNI(numDNI));
+                int numero = Integer.parseInt(UtilesDNI.normalizarNumero(numDNI));
 
                 // Calcular letra
-                char letra = UtilesDNI.calcularLetraDNI(numero);
+                char letra = UtilesDNI.calcularControl(numero);
 
                 // Publicar la letra
                 lblDNI.setText(letra + "");
