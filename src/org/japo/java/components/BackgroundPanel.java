@@ -36,8 +36,8 @@ public final class BackgroundPanel extends JPanel {
         g.drawImage(
                 img,            // Objeto Image - Imagen de fondo para el panel
                 0, 0,           // X e Y donde se va a insertar la imagen
-                getWidth() - 1, // Ancho de la imagen - Ancho del panel
-                getHeight() - 1,// Alto de la imagen - Alto del panel
+                getWidth(),     // Ancho de la imagen - Ancho del panel
+                getHeight(),    // Alto de la imagen - Alto del panel
                 this);          // Dónde se dibujará la imagen - Panel
 
         // Panel opaco - Muestra imagen

@@ -172,6 +172,30 @@ public final class UtilesArrays {
         return posicion;
     }
 
+    // Búsqueda Simple - String
+    public static final int buscar(String[] listaDatos, String clave) {
+        // Marcador de posición
+        int posicion = 0;
+
+        // Semáforo de Proceso de Búsqueda
+        boolean finBusquedaOK = false;
+
+        // Proceso de búsqueda
+        do {
+            if (posicion >= listaDatos.length) {
+                finBusquedaOK = true;
+                posicion = -1;
+            } else if (listaDatos[posicion].equals(clave)) {
+                finBusquedaOK = true;
+            } else {
+                posicion++;
+            }
+        } while (!finBusquedaOK);
+
+        // Posición de la clave en el array
+        return posicion;
+    }
+
     // Ordenación - Burbuja
     public static final void ordenarBurbuja(int[] lista) {
         for (int i = 0; i < lista.length - 1; i++) {

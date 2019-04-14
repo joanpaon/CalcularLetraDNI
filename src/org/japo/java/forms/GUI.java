@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 José A. Pacheco Ondoño - joanpaon@gmail.com.
+ * Copyright 2019 José A. Pacheco Ondoño - joanpaon@gmail.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.net.URL;
 import java.util.Properties;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -39,31 +37,37 @@ import org.japo.java.libraries.UtilesSwing;
 public final class GUI extends JFrame {
 
     // Propiedades App
-    public static final String PRP_LOOK_AND_FEEL_PROFILE = "form_look_and_feel_profile";
-    public static final String PRP_FAVICON_RESOURCE = "form_favicon_resource";
-    public static final String PRP_FORM_TITLE = "form_title";
+    public static final String PRP_FAVICON_RESOURCE = "favicon_resource";
+    public static final String PRP_FONT_RESOURCE = "font_resource";
     public static final String PRP_FORM_HEIGHT = "form_height";
     public static final String PRP_FORM_WIDTH = "form_width";
-    public static final String PRP_FORM_BACKGROUND_RESOURCE = "form_background_resource";
-    public static final String PRP_FORM_FONT_RESOURCE = "form_font_resource";
+    public static final String PRP_FORM_TITLE = "form_title";
+    public static final String PRP_IMAGE_RESOURCE = "image_resource";
+    public static final String PRP_LOOK_AND_FEEL_PROFILE = "look_and_feel_profile";
 
     // Valores por Defecto
-    public static final String DEF_LOOK_AND_FEEL_PROFILE = UtilesSwing.LNF_WINDOWS_PROFILE;
     public static final String DEF_FAVICON_RESOURCE = "img/favicon.png";
-    public static final String DEF_FORM_TITLE = "Swing Manual App";
+    public static final String DEF_FONT_FALLBACK_NAME = Font.SERIF;
+    public static final String DEF_FONT_SYSTEM_NAME = "Kaufmann BT";
     public static final int DEF_FORM_HEIGHT = 300;
     public static final int DEF_FORM_WIDTH = 500;
-    public static final String DEF_FORM_BACKGROUND_RESOURCE = "img/background.jpg";
-    public static final String DEF_FORM_FONT_RESOURCE = "fonts/default_font.ttf";
+    public static final String DEF_FORM_TITLE = "Swing Manual App";
+    public static final String DEF_LOOK_AND_FEEL_PROFILE = UtilesSwing.LNF_WINDOWS_PROFILE;
 
     // Referencias
-    private Properties prp;
-    
+    private final Properties prp;
+
     // Componentes
     private JTextField txfDNI;
     private JLabel lblDNI;
     private JPanel pnlDNI;
     private JPanel pnlPpal;
+
+    // Fuentes
+    private Font fntDNI;
+
+    // Imágenes
+    private Image imgDNI;
 
     // Constructor
     public GUI(Properties prp) {
@@ -82,20 +86,25 @@ public final class GUI extends JFrame {
 
     // Construcción - GUI
     private void initComponents() {
+        // Fuentes
+        fntDNI = UtilesSwing.generarFuenteRecurso(
+                prp.getProperty(PRP_FONT_RESOURCE),
+                DEF_FONT_SYSTEM_NAME,
+                DEF_FONT_FALLBACK_NAME);
+
+        // Imágenes
+        imgDNI = UtilesSwing.importarImagenRecurso(
+                prp.getProperty(PRP_IMAGE_RESOURCE));
+
         // Número de DNI
         txfDNI = new JTextField("");
-        txfDNI.setFont(UtilesSwing.importarFuenteRecurso(
-                prp.getProperty(PRP_FORM_FONT_RESOURCE, DEF_FORM_FONT_RESOURCE)).
-                deriveFont(Font.PLAIN, 80f));
+        txfDNI.setFont(fntDNI.deriveFont(Font.PLAIN, 80f));
         txfDNI.setColumns(8);
         txfDNI.setHorizontalAlignment(JTextField.RIGHT);
-        txfDNI.addActionListener(new AEM(this));
 
         // Control de DNI
-        lblDNI = new JLabel("•");
-        lblDNI.setFont(UtilesSwing.importarFuenteRecurso(
-                prp.getProperty(PRP_FORM_FONT_RESOURCE, DEF_FORM_FONT_RESOURCE)).
-                deriveFont(Font.PLAIN, 80f));
+        lblDNI = new JLabel("•"); // Alt + NUMPAD7
+        lblDNI.setFont(fntDNI.deriveFont(Font.PLAIN, 80f));
         lblDNI.setOpaque(true);
         lblDNI.setBackground(Color.WHITE);
         lblDNI.setBorder(txfDNI.getBorder());
@@ -104,12 +113,6 @@ public final class GUI extends JFrame {
         pnlDNI = new JPanel();
         pnlDNI.add(txfDNI);
         pnlDNI.add(lblDNI);
-
-        // Imagen de Fondo
-        String pthDNI = prp.getProperty(
-                PRP_FORM_BACKGROUND_RESOURCE, DEF_FORM_BACKGROUND_RESOURCE);
-        URL urlDNI = ClassLoader.getSystemResource(pthDNI);
-        Image imgDNI = new ImageIcon(urlDNI).getImage();
 
         // Panel Principal
         pnlPpal = new BackgroundPanel(imgDNI);
@@ -143,6 +146,9 @@ public final class GUI extends JFrame {
         // Establecer Favicon
         UtilesSwing.establecerFavicon(this, prp.getProperty(
                 PRP_FAVICON_RESOURCE, DEF_FAVICON_RESOURCE));
+
+        // Registra Gestores de Eventos
+        txfDNI.addActionListener(new AEM(this));
     }
 
     // Calcula la letra del DNI actual
@@ -150,7 +156,7 @@ public final class GUI extends JFrame {
         try {
             // Obtiene y Depura el Número de DNI Introducido
             String numDNI = txfDNI.getText().trim().toUpperCase();
-            
+
             // Procesa el número de DNI
             if (UtilesDNI.validarNumero(numDNI)) {
                 // Número de DNI
@@ -173,7 +179,7 @@ public final class GUI extends JFrame {
 
             // Publicar la letra
             txfDNI.setText("");
-            lblDNI.setText("•");
+            lblDNI.setText("•"); // Alt + NUMPAD7
         }
     }
 }

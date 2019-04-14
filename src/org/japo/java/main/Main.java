@@ -26,7 +26,7 @@ import org.japo.java.libraries.UtilesApp;
  */
 public final class Main {
 
-   // Constructor Oculto
+    // Constructor Oculto
     private Main() {
 
     }
