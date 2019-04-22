@@ -87,26 +87,16 @@ public final class GUI extends JFrame implements ClipboardOwner {
 
     // Construcción - GUI
     private void initComponents() {
-        // Portapapeles
+        // Botón - Portapapeles
         btnClip = new JButton();
-        btnClip.setIcon(new ImageIcon(UtilesSwing.escalarImagen(imgClip, 64, 64)));
         btnClip.setFocusable(false);
 
         // Campo de Texto - Número de DNI
         txfDNI = new JTextField("");
-        txfDNI.setFont(fntDNI.deriveFont(Font.PLAIN, 80f));
-        txfDNI.setColumns(8);
         txfDNI.setHorizontalAlignment(JTextField.RIGHT);
-
-        // Modelo Campo de Texto - Número de DNI
-        doc = txfDNI.getDocument();
-
-        // Gestor de Eventos de Documento - Número de DNI
-        dem = new DEM(this);
 
         // Etiqueta - Control de DNI
         lblDNI = new JLabel("•"); // Alt + NUMPAD7
-        lblDNI.setFont(fntDNI.deriveFont(Font.PLAIN, 80f));
         lblDNI.setOpaque(true);
         lblDNI.setBackground(Color.WHITE);
         lblDNI.setBorder(txfDNI.getBorder());
@@ -120,12 +110,10 @@ public final class GUI extends JFrame implements ClipboardOwner {
         pnlDNI.add(lblDNI);
 
         // Panel Principal
-        pnlPpal = new BackgroundPanel(imgBack);
         pnlPpal.setLayout(new GridBagLayout());
         pnlPpal.add(pnlDNI);
 
         // Ventana Principal
-        setContentPane(pnlPpal);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
@@ -141,6 +129,12 @@ public final class GUI extends JFrame implements ClipboardOwner {
         // Imágenes
         imgBack = UtilesSwing.importarImagenRecurso(prp.getProperty("img_back_resource"));
         imgClip = UtilesSwing.importarImagenRecurso(prp.getProperty("img_clip_resource"));
+
+        // Panel Principal
+        pnlPpal = new BackgroundPanel(imgBack);
+
+        // Ventana Principal
+        setContentPane(pnlPpal);
     }
 
     // Inicialización Posterior
@@ -148,7 +142,20 @@ public final class GUI extends JFrame implements ClipboardOwner {
         // Establecer Favicon
         UtilesSwing.establecerFavicon(this, prp.getProperty("img_favicon_resource"));
 
-        // Ventana Principal - Propiedades
+        // Botón - Portapapeles
+        btnClip.setIcon(new ImageIcon(UtilesSwing.escalarImagen(imgClip, 64, 64)));
+
+        // Campo de Texto - Número de DNI
+        txfDNI.setFont(fntDNI.deriveFont(Font.PLAIN, 80f));
+        txfDNI.setColumns(8);
+
+        // Modelo Campo de Texto - Número de DNI
+        doc = txfDNI.getDocument();
+
+        // Etiqueta - Control de DNI
+        lblDNI.setFont(fntDNI.deriveFont(Font.PLAIN, 80f));
+
+        // Ventana Principal
         setTitle(prp.getProperty("form_title"));
         int width = Integer.parseInt(prp.getProperty("form_width"));
         int height = Integer.parseInt(prp.getProperty("form_height"));
@@ -162,6 +169,9 @@ public final class GUI extends JFrame implements ClipboardOwner {
         lblDNI.setPreferredSize(new Dimension(
                 lblDNI.getPreferredSize().width + 2,
                 txfDNI.getPreferredSize().height));
+
+        // Gestor de Eventos de Documento - Número de DNI
+        dem = new DEM(this);
 
         // Registra Gestores de Eventos
         btnClip.addActionListener(new AEM(this));
