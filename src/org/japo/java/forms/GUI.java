@@ -16,17 +16,30 @@
 package org.japo.java.forms;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.util.Properties;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 import org.japo.java.components.BackgroundPanel;
 import org.japo.java.events.AEM;
+import org.japo.java.events.DEM;
 import org.japo.java.libraries.UtilesDNI;
 import org.japo.java.libraries.UtilesSwing;
 
@@ -34,30 +47,17 @@ import org.japo.java.libraries.UtilesSwing;
  *
  * @author José A. Pacheco Ondoño - joanpaon@gmail.com
  */
-public final class GUI extends JFrame {
-
-    // Propiedades App
-    public static final String PRP_FAVICON_RESOURCE = "favicon_resource";
-    public static final String PRP_FONT_RESOURCE = "font_resource";
-    public static final String PRP_FORM_HEIGHT = "form_height";
-    public static final String PRP_FORM_WIDTH = "form_width";
-    public static final String PRP_FORM_TITLE = "form_title";
-    public static final String PRP_IMAGE_RESOURCE = "image_resource";
-    public static final String PRP_LOOK_AND_FEEL_PROFILE = "look_and_feel_profile";
-
-    // Valores por Defecto
-    public static final String DEF_FAVICON_RESOURCE = "img/favicon.png";
-    public static final String DEF_FONT_FALLBACK_NAME = Font.SERIF;
-    public static final String DEF_FONT_SYSTEM_NAME = "Kaufmann BT";
-    public static final int DEF_FORM_HEIGHT = 300;
-    public static final int DEF_FORM_WIDTH = 500;
-    public static final String DEF_FORM_TITLE = "Swing Manual App";
-    public static final String DEF_LOOK_AND_FEEL_PROFILE = UtilesSwing.LNF_WINDOWS_PROFILE;
+public final class GUI extends JFrame implements ClipboardOwner {
 
     // Referencias
     private final Properties prp;
 
+    // Modelos
+    private Document doc;
+    private DocumentListener dem;
+
     // Componentes
+    private JButton btnClip;
     private JTextField txfDNI;
     private JLabel lblDNI;
     private JPanel pnlDNI;
@@ -67,7 +67,8 @@ public final class GUI extends JFrame {
     private Font fntDNI;
 
     // Imágenes
-    private Image imgDNI;
+    private Image imgBack;
+    private Image imgClip;
 
     // Constructor
     public GUI(Properties prp) {
@@ -86,23 +87,24 @@ public final class GUI extends JFrame {
 
     // Construcción - GUI
     private void initComponents() {
-        // Fuentes
-        fntDNI = UtilesSwing.generarFuenteRecurso(
-                prp.getProperty(PRP_FONT_RESOURCE),
-                DEF_FONT_SYSTEM_NAME,
-                DEF_FONT_FALLBACK_NAME);
+        // Portapapeles
+        btnClip = new JButton();
+        btnClip.setIcon(new ImageIcon(UtilesSwing.escalarImagen(imgClip, 64, 64)));
+        btnClip.setFocusable(false);
 
-        // Imágenes
-        imgDNI = UtilesSwing.importarImagenRecurso(
-                prp.getProperty(PRP_IMAGE_RESOURCE));
-
-        // Número de DNI
+        // Campo de Texto - Número de DNI
         txfDNI = new JTextField("");
         txfDNI.setFont(fntDNI.deriveFont(Font.PLAIN, 80f));
         txfDNI.setColumns(8);
         txfDNI.setHorizontalAlignment(JTextField.RIGHT);
 
-        // Control de DNI
+        // Modelo Campo de Texto - Número de DNI
+        doc = txfDNI.getDocument();
+
+        // Gestor de Eventos de Documento - Número de DNI
+        dem = new DEM(this);
+
+        // Etiqueta - Control de DNI
         lblDNI = new JLabel("•"); // Alt + NUMPAD7
         lblDNI.setFont(fntDNI.deriveFont(Font.PLAIN, 80f));
         lblDNI.setOpaque(true);
@@ -110,62 +112,113 @@ public final class GUI extends JFrame {
         lblDNI.setBorder(txfDNI.getBorder());
 
         // Panel DNI
-        pnlDNI = new JPanel();
+        pnlDNI = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        pnlDNI.setBackground(new Color(255, 255, 255, 150));
+        pnlDNI.setBorder(new LineBorder(Color.DARK_GRAY));
+        pnlDNI.add(btnClip);
         pnlDNI.add(txfDNI);
         pnlDNI.add(lblDNI);
 
         // Panel Principal
-        pnlPpal = new BackgroundPanel(imgDNI);
+        pnlPpal = new BackgroundPanel(imgBack);
         pnlPpal.setLayout(new GridBagLayout());
         pnlPpal.add(pnlDNI);
 
         // Ventana Principal
         setContentPane(pnlPpal);
-        setTitle(prp.getProperty(PRP_FORM_TITLE, DEF_FORM_TITLE));
-        try {
-            int height = Integer.parseInt(prp.getProperty(PRP_FORM_HEIGHT));
-            int width = Integer.parseInt(prp.getProperty(PRP_FORM_WIDTH));
-            setSize(width, height);
-        } catch (NumberFormatException e) {
-            setSize(DEF_FORM_WIDTH, DEF_FORM_HEIGHT);
-        }
         setResizable(false);
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     // Inicialización Anterior    
     private void initBefore() {
         // Establecer LnF
-        UtilesSwing.establecerLnFProfile(prp.getProperty(
-                PRP_LOOK_AND_FEEL_PROFILE, DEF_LOOK_AND_FEEL_PROFILE));
+        UtilesSwing.establecerLnFProfile(prp.getProperty("look_and_feel_profile"));
+
+        // Fuentes
+        fntDNI = UtilesSwing.generarFuenteRecurso(prp.getProperty("font_resource"));
+
+        // Imágenes
+        imgBack = UtilesSwing.importarImagenRecurso(prp.getProperty("img_back_resource"));
+        imgClip = UtilesSwing.importarImagenRecurso(prp.getProperty("img_clip_resource"));
     }
 
     // Inicialización Posterior
     private void initAfter() {
         // Establecer Favicon
-        UtilesSwing.establecerFavicon(this, prp.getProperty(
-                PRP_FAVICON_RESOURCE, DEF_FAVICON_RESOURCE));
+        UtilesSwing.establecerFavicon(this, prp.getProperty("img_favicon_resource"));
+
+        // Ventana Principal - Propiedades
+        setTitle(prp.getProperty("form_title"));
+        int width = Integer.parseInt(prp.getProperty("form_width"));
+        int height = Integer.parseInt(prp.getProperty("form_height"));
+        setSize(width, height);
+        setLocationRelativeTo(null);
+
+        // Ajustes de tamaño
+        btnClip.setPreferredSize(new Dimension(
+                btnClip.getPreferredSize().width + 2,
+                txfDNI.getPreferredSize().height + 2));
+        lblDNI.setPreferredSize(new Dimension(
+                lblDNI.getPreferredSize().width + 2,
+                txfDNI.getPreferredSize().height));
 
         // Registra Gestores de Eventos
-        txfDNI.addActionListener(new AEM(this));
+        btnClip.addActionListener(new AEM(this));
+        doc.addDocumentListener(dem);
+    }
+
+    // Notificación Pérdida Propiedad Portapapeles
+    @Override
+    public void lostOwnership(Clipboard clipboard, Transferable contents) {
+        // No hacer nada
+    }
+
+    // Campo de texto > Portapapeles
+    public final void procesarPortapapeles(ActionEvent e) {
+        // Obtiene el Número de DNI Introducido
+        String txtDNI = txfDNI.getText();
+
+        // Forma DNI
+        if (UtilesDNI.validarNumero(txtDNI)) {
+            // Si Numero de DNI OK > Letra ya Calculada
+            txtDNI += lblDNI.getText();
+        }
+
+        // Texto > Portapapeles
+        UtilesSwing.exportarTextoPortapapeles(txtDNI, this);
+
+        // Portapapeles > Consola - Realimentación
+        System.out.println("Portapapeles: " + UtilesSwing.importarTextoPortapapeles());
+    }
+
+    // Procesamiento - Eliminación de Texto
+    public final void procesarCambioTexto(DocumentEvent e) {
+        SwingUtilities.invokeLater(() -> {
+            procesarDNI();
+        });
     }
 
     // Calcula la letra del DNI actual
-    public void procesarDNI(ActionEvent ae) {
+    private void procesarDNI() {
         try {
             // Obtiene y Depura el Número de DNI Introducido
             String numDNI = txfDNI.getText().trim().toUpperCase();
 
-            // Procesa el número de DNI
+            // Actualiza DNI ( *** NO Nuevos Eventos *** )
+            doc.removeDocumentListener(dem);
+            txfDNI.setText(numDNI);
+            doc.addDocumentListener(dem);
+
+            // Procesa Número de DNI
             if (UtilesDNI.validarNumero(numDNI)) {
                 // Número de DNI
                 int numero = Integer.parseInt(UtilesDNI.normalizarNumero(numDNI));
 
-                // Calcular letra
+                // Calcula Letra de DNI
                 char letra = UtilesDNI.calcularControl(numero);
 
-                // Publicar la letra
+                // Publica Letra de DNI
                 lblDNI.setText(letra + "");
 
                 // Seleccionar Contenido Campo de Texto
@@ -174,11 +227,6 @@ public final class GUI extends JFrame {
                 throw new Exception("ERROR: Formato de DNI incorrecto");
             }
         } catch (Exception e) {
-            // Mostrar El error
-            System.out.println(e.getMessage());
-
-            // Publicar la letra
-            txfDNI.setText("");
             lblDNI.setText("•"); // Alt + NUMPAD7
         }
     }
